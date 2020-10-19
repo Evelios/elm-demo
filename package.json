@@ -1,0 +1,11 @@
+{
+  "name": "elm-demo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "elm-test"
+  },
+  "author": "Thomas Waters",
+  "license": "MIT"
+}

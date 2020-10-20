@@ -1,88 +1,40 @@
 module Main exposing (..)
 
-import Browser
-import Browser.Dom
-import Browser.Events
-import Element
-import Html exposing (Html)
-import Picture
-import Pixels exposing (Pixels)
-import Render
+import Demo
+import Geometry.Svg
+import Point2d
+import Quantity
 import Size exposing (Size)
 import Svg exposing (Svg)
-import Task
+import Svg.Attributes as Attributes
+import Triangle2d
 
 
 main =
-    Browser.element
-        { init = init
-        , update = update
-        , subscriptions = subscriptions
-        , view = view
-        }
+    Demo.static drawing
 
 
+drawing : Size units -> Svg msg
+drawing size =
+    let
+        maxX =
+            Quantity.half <| Size.width size
 
--- Init
+        maxY =
+            Quantity.half <| Size.height size
 
+        minX =
+            Quantity.negate maxX
 
-type alias Model msg =
-    { size : Size Pixels
-    , picture : Maybe (Svg msg)
-    }
+        minY =
+            Quantity.negate maxY
 
-
-init : () -> ( Model msg, Cmd Msg )
-init _ =
-    ( { size = Size.size (Pixels.float 0) (Pixels.float 0)
-      , picture = Nothing
-      }
-    , Task.perform GotViewport Browser.Dom.getViewport
-    )
-
-
-
--- Update
-
-
-type Msg
-    = GotViewport Browser.Dom.Viewport
-    | WindowResize Float Float
-    | GeneratePicture
-
-
-update : Msg -> Model msg -> ( Model msg, Cmd msg )
-update msg model =
-    case msg of
-        GotViewport { viewport } ->
-            update
-                (WindowResize viewport.width viewport.height)
-                model
-
-        WindowResize width height ->
-            { model | size = Debug.log "size" <| Size.size (Pixels.float width) (Pixels.float height) }
-                |> update GeneratePicture
-
-        GeneratePicture ->
-            ( { model | picture = Just <| Picture.drawing model.size }, Cmd.none )
-
-
-subscriptions : model -> Sub Msg
-subscriptions _ =
-    Browser.Events.onResize (\w h -> WindowResize (toFloat w) (toFloat h))
-
-
-
--- View
-
-
-view : Model msg -> Html msg
-view model =
-    Element.layout [] <|
-        case model.picture of
-            Nothing ->
-                Element.none
-
-            Just picture ->
-                Render.cartesian model.size picture
-                    |> Element.html
+        triangle =
+            Triangle2d.from
+                (Point2d.xy minX minY)
+                (Point2d.xy Quantity.zero maxY)
+                (Point2d.xy maxX minY)
+    in
+    Geometry.Svg.triangle2d
+        [ Attributes.fill "orange" ]
+        triangle

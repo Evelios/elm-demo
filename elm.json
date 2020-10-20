@@ -5,12 +5,16 @@
     "license": "BSD-3-Clause",
     "version": "1.0.0",
     "exposed-modules": [
+        "Coordinates.Cartesian",
+        "Coordinates.SvgYDown",
+        "Demo",
         "AspectRatio",
         "Paper",
         "Size"
     ],
     "elm-version": "0.19.0 <= v < 0.20.0",
     "dependencies": {
+        "elm/browser": "1.0.2 <= v < 2.0.0",
         "elm/core": "1.0.0 <= v < 2.0.0",
         "elm/html": "1.0.0 <= v < 2.0.0",
         "elm/svg": "1.0.1 <= v < 2.0.0",
@@ -21,7 +25,8 @@
         "ianmackenzie/elm-interval": "2.0.0 <= v < 3.0.0",
         "ianmackenzie/elm-triangular-mesh": "1.1.0 <= v < 2.0.0",
         "ianmackenzie/elm-units": "2.7.0 <= v < 3.0.0",
-        "ianmackenzie/elm-units-interval": "1.1.0 <= v < 2.0.0"
+        "ianmackenzie/elm-units-interval": "1.1.0 <= v < 2.0.0",
+        "mdgriffith/elm-ui": "1.1.8 <= v < 2.0.0"
     },
     "test-dependencies": {
         "elm-explorations/test": "1.2.2 <= v < 2.0.0"

@@ -43,6 +43,7 @@ cartesian size svg =
     in
     Svg.svg
         [ Svg.Attributes.viewBox viewBox
+        , Svg.Attributes.transform "scale (-1,-1)"
         ]
         [ svg
         ]

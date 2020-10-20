@@ -5,7 +5,6 @@ import Browser.Dom
 import Browser.Events
 import Element
 import Html exposing (Html)
-import Html.Attributes
 import Picture
 import Pixels exposing (Pixels)
 import Render

@@ -13,13 +13,33 @@ import Quantity
 import Size exposing (Size)
 import Svg exposing (Svg)
 import Svg.Attributes as Attributes
+import Triangle2d
 
 
 drawing : Size units -> Svg msg
 drawing size =
-    Geometry.Svg.boundingBox2d
+    let
+        maxX =
+            Quantity.half <| Size.width size
+
+        maxY =
+            Quantity.half <| Size.height size
+
+        minX =
+            Quantity.negate maxX
+
+        minY =
+            Quantity.negate maxY
+
+        triangle =
+            Triangle2d.from
+                (Point2d.xy minX minY)
+                (Point2d.xy Quantity.zero maxY)
+                (Point2d.xy maxX minY)
+    in
+    Geometry.Svg.triangle2d
         [ Attributes.fill "orange" ]
-        (boundingBoxFromSize size)
+        triangle
 
 
 boundingBoxFromSize : Size units -> BoundingBox2d units coordinates

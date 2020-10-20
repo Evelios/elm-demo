@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "elm-test"
+    "test": "elm-test",
+    "start": "cd examples; elm-live src/Main.elm"
   },
   "author": "Thomas Waters",
   "license": "MIT"

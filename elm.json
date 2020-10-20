@@ -12,13 +12,15 @@
     "elm-version": "0.19.0 <= v < 0.20.0",
     "dependencies": {
         "elm/core": "1.0.0 <= v < 2.0.0",
-        "ianmackenzie/elm-geometry": "3.6.0 <= v < 4.0.0",
-        "ianmackenzie/elm-geometry-test": "1.0.0 <= v < 2.0.0",
-        "ianmackenzie/elm-units": "2.7.0 <= v < 3.0.0",
+        "elm/html": "1.0.0 <= v < 2.0.0",
+        "elm/svg": "1.0.1 <= v < 2.0.0",
         "ianmackenzie/elm-1d-parameter": "1.0.1 <= v < 2.0.0",
         "ianmackenzie/elm-float-extra": "1.1.0 <= v < 2.0.0",
+        "ianmackenzie/elm-geometry": "3.6.0 <= v < 4.0.0",
+        "ianmackenzie/elm-geometry-test": "1.0.0 <= v < 2.0.0",
         "ianmackenzie/elm-interval": "2.0.0 <= v < 3.0.0",
         "ianmackenzie/elm-triangular-mesh": "1.1.0 <= v < 2.0.0",
+        "ianmackenzie/elm-units": "2.7.0 <= v < 3.0.0",
         "ianmackenzie/elm-units-interval": "1.1.0 <= v < 2.0.0"
     },
     "test-dependencies": {

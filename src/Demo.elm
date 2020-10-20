@@ -1,18 +1,29 @@
-module Demo exposing (static)
+module Demo exposing
+    ( Page
+    , sandbox
+    , View, fullScreen
+    )
 
 {-|
 
 
 # Modules
 
-@docs static
+@docs Page
+
+@docs sandbox
+
+
+# Views
+
+@docs View, fullScreen
 
 -}
 
 import Browser
 import Browser.Dom
 import Browser.Events
-import Element
+import Element exposing (Element)
 import Html exposing (Html)
 import Pixels exposing (Pixels)
 import Render
@@ -25,32 +36,70 @@ import Task
 -- Api
 
 
-static : (Size Pixels -> Svg Msg) -> Program () (Model Msg) Msg
-static generator =
+{-| -}
+type alias Page model msg =
+    { generator : Size Pixels -> Svg (Msg msg)
+    , size : View
+    , init : model
+    , update : msg -> model -> model
+    , gui : model -> Element msg
+    }
+
+
+{-| -}
+sandbox : Page model msg -> Program () (Model model msg) (Msg msg)
+sandbox page =
     Browser.element
-        { init = init generator
-        , update = update
-        , subscriptions = subscriptions
-        , view = view
+        { init =
+            init
+                { model = page.init, generator = page.generator }
+        , update =
+            update
+                { update = page.update }
+        , subscriptions =
+            subscriptions
+        , view =
+            view
+                { gui = page.gui }
         }
+
+
+
+-- Page View
+
+
+{-| -}
+type View
+    = FullScreen
+
+
+{-| -}
+fullScreen : View
+fullScreen =
+    FullScreen
 
 
 
 -- Init
 
 
-type alias Model msg =
+type alias Model page msg =
     { size : Size Pixels
-    , generator : Size Pixels -> Svg msg
-    , picture : Maybe (Svg msg)
+    , generator : Size Pixels -> Svg (Msg msg)
+    , picture : Maybe (Svg (Msg msg))
+    , page : page
     }
 
 
-init : (Size Pixels -> Svg msg) -> () -> ( Model msg, Cmd Msg )
-init generator _ =
+init :
+    { model : model, generator : Size Pixels -> Svg (Msg msg) }
+    -> ()
+    -> ( Model model msg, Cmd (Msg msg) )
+init page _ =
     ( { size = Size.size (Pixels.float 0) (Pixels.float 0)
-      , generator = generator
+      , generator = page.generator
       , picture = Nothing
+      , page = page.model
       }
     , Task.perform GotViewport Browser.Dom.getViewport
     )
@@ -60,29 +109,43 @@ init generator _ =
 -- Update
 
 
-type Msg
+toMsg : msg -> Msg msg
+toMsg =
+    UserMsg
+
+
+type Msg msg
     = GotViewport Browser.Dom.Viewport
     | WindowResize Float Float
     | GeneratePicture
+    | UserMsg msg
 
 
-update : Msg -> Model msg -> ( Model msg, Cmd Msg )
-update msg model =
+update :
+    { update : msg -> model -> model }
+    -> Msg msg
+    -> Model model msg
+    -> ( Model model msg, Cmd (Msg msg) )
+update page msg model =
     case msg of
         GotViewport { viewport } ->
             update
+                page
                 (WindowResize viewport.width viewport.height)
                 model
 
         WindowResize width height ->
             { model | size = Debug.log "size" <| Size.size (Pixels.float width) (Pixels.float height) }
-                |> update GeneratePicture
+                |> update page GeneratePicture
 
         GeneratePicture ->
             ( { model | picture = Just <| model.generator model.size }, Cmd.none )
 
+        UserMsg userMsg ->
+            ( { model | page = page.update userMsg model.page }, Cmd.none )
 
-subscriptions : model -> Sub Msg
+
+subscriptions : model -> Sub (Msg msg)
 subscriptions _ =
     Browser.Events.onResize (\w h -> WindowResize (toFloat w) (toFloat h))
 
@@ -91,13 +154,22 @@ subscriptions _ =
 -- View
 
 
-view : Model Msg -> Html Msg
-view model =
-    Element.layout [] <|
-        case model.picture of
-            Nothing ->
-                Element.none
+view : { gui : model -> Element msg } -> Model model msg -> Html (Msg msg)
+view page model =
+    let
+        picture =
+            case model.picture of
+                Nothing ->
+                    Element.none
 
-            Just picture ->
-                Render.cartesian model.size picture
-                    |> Element.html
+                Just rendering ->
+                    Render.cartesian model.size rendering
+                        |> Element.html
+
+        gui =
+            page.gui model.page
+                |> Element.map toMsg
+    in
+    Element.layout
+        [ Element.inFront gui ]
+        picture

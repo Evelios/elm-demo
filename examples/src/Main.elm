@@ -1,6 +1,7 @@
 module Main exposing (..)
 
 import Demo
+import Element
 import Geometry.Svg
 import Point2d
 import Quantity
@@ -11,7 +12,45 @@ import Triangle2d
 
 
 main =
-    Demo.static drawing
+    Demo.sandbox
+        { generator = drawing
+        , size = Demo.fullScreen
+        , init = init
+        , update = update
+        , gui = \_ -> Element.none
+        }
+
+
+type alias Model =
+    {}
+
+
+
+-- Init
+
+
+init : Model
+init =
+    {}
+
+
+
+-- Update
+
+
+type Msg
+    = None
+
+
+update : Msg -> Model -> Model
+update msg model =
+    case msg of
+        None ->
+            model
+
+
+
+-- Drawing
 
 
 drawing : Size units -> Svg msg
